@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import authService from '../services/AuthService';
 
 class AuthController {
+
   async register(req: Request, res: Response): Promise<void> {
     try {
       const { username, email, password } = req.body;
@@ -29,6 +30,26 @@ class AuthController {
       res.status(401).json({ message: (error as Error).message });
     }
   }
+
+  async getProfile(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.user!.id;
+      const profile = await authService.getProfile(userId);
+
+      if (!profile) {
+        res.status(404).json({ message: 'Perfil no encontrado' });
+        return; 
+     }
+
+     res.json(profile);
+
+    } catch (error: unknown) {
+      res.status(500).json({ message: (error as Error).message });
+    }
+  }
+
+  
 }
+
 
 export default new AuthController();

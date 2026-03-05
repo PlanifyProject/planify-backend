@@ -36,6 +36,14 @@ class AuthService {
       { expiresIn: process.env.JWT_EXPIRES_IN || '24h' } as jwt.SignOptions
     );
   }
+
+  async getProfile(userId: number) {
+    const user = await userRepository.findById(userId);
+    if (!user) throw new Error('Usuario no encontrado');
+    return { id: user.id, username: user.username, email: user.email };
+  }
+
+  
 }
 
 export default new AuthService();
