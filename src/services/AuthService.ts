@@ -43,7 +43,19 @@ class AuthService {
     return { id: user.id, username: user.username, email: user.email };
   }
 
-  
+  async updateProfile(userId: number, data: { username?: string; email?: string; password?: string }) {
+    const user = await userRepository.findById(userId);
+    if (!user) throw new Error('Usuario no encontrado');
+    if (data.email && data.email !== user.email) {
+      const existing = await userRepository.findByEmail(data.email);
+      if (existing) throw new Error('El correo ya está registrado');
+    }   
+    const updateData: Partial<typeof user> = {};
+    if (data.username) updateData.username = data.username;
+    if (data.email) updateData.email = data.email;
+    if (data.password) updateData.password = await bcrypt.hash(data.password, 10);
+    return await userRepository.update(userId, updateData);
+  }
 }
 
 export default new AuthService();

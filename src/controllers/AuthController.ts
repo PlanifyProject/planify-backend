@@ -48,7 +48,22 @@ class AuthController {
     }
   }
 
-  
+  async updateProfile(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.user!.id;
+      const { username, email, password } = req.body; 
+      
+      if (!username && !email && !password) {
+        res.status(400).json({ message: 'Al menos un campo debe ser actualizado' });
+        return;
+      }
+      const result = await authService.updateProfile(userId, { username, email, password });
+      res.json(result);
+    } catch (error: unknown) {
+      res.status(400).json({ message: (error as Error).message });
+    } 
+  }
+
 }
 
 
