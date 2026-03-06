@@ -8,15 +8,21 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://planifyproject.github.io',
+    'http://localhost:3000',
+    'http://127.0.0.1:5500',
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Rutas
 app.use('/api', routes);
 
-// Health check
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', service: 'planify-backend' });
 });
