@@ -18,8 +18,13 @@ class UserRepository {
     return User.create(data);
   }
 
-  async update(id: number, data: Partial<User>): Promise<[number]> {
-    return User.update(data, { where: { id } });
+  async update(id: number, data: Partial<User>): Promise<object> {
+    await User.update(data, { where: { id } });
+  
+    const updated = await User.findByPk(id, {
+    attributes: { exclude: ['password'] } 
+  });
+    return updated!;
   }
 }
 

@@ -28,4 +28,8 @@ router.delete('/categories/:id', authMiddleware, (req, res) => categoryControlle
 router.get('/reports', authMiddleware, (req, res) => reportController.getFullReport(req, res));
 router.get('/reports/monthly', authMiddleware, (req, res) => reportController.getMonthlySummary(req, res));
 
+// ── Profile (protegida) ──────────────────────────────────────
+router.get('/profile', authMiddleware, (req, res) => authController.getProfile(req, res));
+router.put('/profile', authMiddleware, (req, res) => authController.updateProfile(req, res));
+
 export default router;
