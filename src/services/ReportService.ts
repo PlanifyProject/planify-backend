@@ -44,18 +44,19 @@ class ReportService {
 
     const transactions = await Transaction.findAll({
       where,
-      include: [{ model: Category, as: 'category', attributes: ['name', 'color', 'icon', 'type'] }],
+      include: [{ model: Category, as: 'category', attributes: ['id', 'name', 'color', 'icon', 'type'] }],
     });
 
-    // Agrupar por categoría
+    // Agrupar por categoría usando categoryId del propio transaction (evita depender de cat.id del include)
     const grouped: Record<string, { name: string; color: string; icon: string; type: string; total: number }> = {};
 
     for (const t of transactions) {
       const cat = (t as Transaction & { category: Category }).category;
-      if (!grouped[cat.id]) {
-        grouped[cat.id] = { name: cat.name, color: cat.color, icon: cat.icon, type: cat.type, total: 0 };
+      const key = String(t.categoryId);
+      if (!grouped[key]) {
+        grouped[key] = { name: cat.name, color: cat.color, icon: cat.icon, type: cat.type, total: 0 };
       }
-      grouped[cat.id].total += Number(t.amount);
+      grouped[key].total += Number(t.amount);
     }
 
     return Object.values(grouped).sort((a, b) => b.total - a.total);
