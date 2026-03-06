@@ -1,0 +1,51 @@
+services:
+  # ── Base de datos (instancia independiente) ──────────────────
+  db:
+    image: postgres:15
+    container_name: planify_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: planify_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d planify_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - planify_network
+
+  # ── Backend (instancia independiente) ───────────────────────
+  app:
+    build: .
+    container_name: planify_app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: admin
+      DB_PASSWORD: password123
+      DB_NAME: planify_db
+      JWT_SECRET: planify_super_secret_key_2024
+      JWT_EXPIRES_IN: 24h
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - planify_network
+
+volumes:
+  postgres_data:
+
+networks:
+  planify_network:
+    driver: bridge
