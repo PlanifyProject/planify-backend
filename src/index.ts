@@ -10,9 +10,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors({
   origin: [
-    'https://planifyproject.github.io',
-    'http://localhost:3000',
-    'http://127.0.0.1:5500',
+    'https://planifyproject.github.io'
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
